@@ -11,15 +11,40 @@ KEYBOARD = None
 PLAYER = None
 ######################
 
-GAME_WIDTH = 5
-GAME_HEIGHT = 5
+GAME_WIDTH = 10
+GAME_HEIGHT = 8
 
 #### Put class definitions here ####
 class Rock(GameElement):
     IMAGE = "Rock"
+    SOLID = True
 
 class Character(GameElement):
     IMAGE = "Horns"
+
+    def next_pos(self, direction):
+        if direction == "up":
+            return(self.x, self.y-1)
+        elif direction == "down":
+            return(self.x, self.y+1)
+        elif direction == "left":
+            return(self.x-1, self.y)
+        elif direction == "right":
+            return(self.x+1, self.y)  
+        return None
+
+    def __init__(self):
+        GameElement.__init__(self)
+        self.inventory = []
+
+
+class Gem(GameElement):
+    IMAGE = "BlueGem"
+    SOLID = False
+    def interact(self, player):
+        player.inventory.append(self)
+        GAME_BOARD.draw_msg("You just acquired a gem! You have %d items!" % (len(player.inventory)))
+
 
 ####   End class definitions    ####
 
@@ -29,7 +54,7 @@ def initialize():
     rock_positions = [
             (2, 1),
             (1, 2),
-            (3 ,2),
+            (3, 2),
             (2, 3)
         ]
     rocks = []
@@ -38,6 +63,8 @@ def initialize():
         GAME_BOARD.register(rock)
         GAME_BOARD.set_el(pos[0], pos[1], rock)
         rocks.append(rock)
+
+    rocks[-1].SOLID = False
 
     for rock in rocks:
         print rock 
@@ -50,34 +77,61 @@ def initialize():
     print PLAYER
 
     GAME_BOARD.draw_msg("This game is wicked awesome.")
+    #this initialized the Gem (blue one)
+    gem = Gem()
+    GAME_BOARD.register(gem)
+    GAME_BOARD.set_el(3, 1, gem)
 
 def keyboard_handler():
+    
+    if KEYBOARD[key.I]:
+        #make I show inventory
+        GAME_BOARD.draw_msg("Inventory: %s" % PLAYER.inventory)  
+
+    direction = None
+
     if KEYBOARD[key.UP]:
-        GAME_BOARD.draw_msg("You pressed up")
-        next_y = PLAYER.y -1
-        GAME_BOARD.del_el(PLAYER.x, PLAYER.y)
-        GAME_BOARD.set_el(PLAYER.x, next_y, PLAYER)
+        direction = "up"
 
-    elif KEYBOARD[key.LEFT]:
-        GAME_BOARD.draw_msg("You pressed left")
-        next_x = PLAYER.x -1
-        GAME_BOARD.del_el(PLAYER.x, PLAYER.y)
-        GAME_BOARD.set_el(next_x, PLAYER.y, PLAYER)
+    if KEYBOARD[key.LEFT]:
+       direction = "left"
 
-    elif KEYBOARD[key.RIGHT]:
-        GAME_BOARD.draw_msg("You pressed right")
-        next_x = PLAYER.x + 1
-        GAME_BOARD.del_el(PLAYER.x, PLAYER.y)
-        GAME_BOARD.set_el(next_x, PLAYER.y, PLAYER)
+    if KEYBOARD[key.RIGHT]:
+       direction = "right"
 
-    elif KEYBOARD[key.DOWN]:
-        GAME_BOARD.draw_msg("You pressed down")
-        next_y = PLAYER.y +1
-        GAME_BOARD.del_el(PLAYER.x, PLAYER.y)
-        GAME_BOARD.set_el(PLAYER.x, next_y, PLAYER)
+    if KEYBOARD[key.DOWN]:
+        direction = "down"
 
-    elif KEYBOARD[key.SPACE]:
-        GAME_BOARD.erase_msg()    
+    if direction:
+        #sets new location tuple (x, y) from .next_pos method
+        next_location = PLAYER.next_pos(direction)
+        #set x, y variables for next location
+        next_x = next_location[0]
+        next_y = next_location[1]   
+
+        #added these next two ifs trying to stop player from moving off board
+        #if 0 > next_x > 4 or 0 > next_y > 4:
+        if next_x == GAME_WIDTH or next_x == -1:
+            next_x = PLAYER.x
+            next_y = PLAYER.y
+
+        if next_y == GAME_HEIGHT or next_y == -1:
+            next_x = PLAYER.x
+            next_y = PLAYER.y    
+            #GAME_BOARD.set_el(next_x, next_y)
+        else:
+        #check for existing elements to interact with
+            existing_el = GAME_BOARD.get_el(next_x, next_y)
+        
+            if existing_el:
+                existing_el.interact(PLAYER)
+       
+            
+            if existing_el is None or not existing_el.SOLID:
+                GAME_BOARD.del_el(PLAYER.x, PLAYER.y) 
+                GAME_BOARD.set_el(next_x, next_y, PLAYER)
+
+     
 
 
 
