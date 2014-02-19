@@ -3,9 +3,9 @@
 import pyglet
 from pyglet.window import key
 from core import GameElement
-
-SCREEN_X = 800
-SCREEN_Y = 700
+#this would be screen resolution
+SCREEN_X = 1200
+SCREEN_Y = 780
 
 game_window = pyglet.window.Window(SCREEN_X, SCREEN_Y)
 
@@ -18,12 +18,12 @@ import game
 IMAGES = {}
 TILE_WIDTH = 0
 TILE_HEIGHT = 0
-
+#this sets reference images up with names
 def setup_images():
     filenames = {
             "Wall": "Wall Block.png",
-            "Block": "Plain Block.png",
-            "GrassBlock": "Grass Block.png",
+            "Block": "Wood_floor.png",
+            "GrassBlock": "Carpet_Block.png",
             "StoneBlock": "Stone Block.png",
             "ShortTree": "Tree Short.png",
             "TallTree": "Tree Tall.png",
@@ -34,13 +34,22 @@ def setup_images():
             "BlueGem": "Gem Blue.png",
             "GreenGem": "Gem Green.png",
             "OrangeGem": "Gem Orange.png",
+            "Ruby": "Gem-Red.png",
             "Heart": "Heart.png",
             "Key": "Key.png",
             "Boy": "Character Boy.png",
             "Cat": "Character Cat Girl.png",
             "Horns": "Character Horn Girl.png",
             "Girl": "Character Pink Girl.png",
-            "Princess": "Character Princess Girl.png"
+            "Princess": "Character Princess Girl.png",
+            "Coffee": "coffee.png",
+            "SofaRight": "SofaRight.png",
+            "SofaLeft": "SofaLeft.png",
+            "Python": "python.png",
+            "Desk": "desk.png",
+            "SofaBrown": "BrwnSofa.png",
+            "SofaBrownRed": "BrwnSofaRed.png"
+
             }
 
     for k,v in filenames.items():
@@ -75,7 +84,7 @@ class Board(object):
                 # On the boundaries
                 game_map.append(["Block"] * width)
             else:
-                row = ["Block"] + (["GrassBlock"] * inner_width) + ["Block"]
+                row = ["Block"] + (["GrassBlock"] * 4) + (["Block"] * 5 )
                 game_map.append(row)
         
         self.base_board = game_map
@@ -125,9 +134,11 @@ class Board(object):
 
     def check_bounds(self, x, y):
         if not (0 <= x < self.width):
-            raise IndexError("%r is out of bounds of the board width: %d"%(x, self.width))
+            #raise IndexError("%r is out of bounds of the board width: %d"%(x, self.width))
+            print "out of bounds"
         if not (0 <= y < self.height):
-            raise IndexError("%r is out of bounds of the board height: %d"%(y, self.width))
+            #raise IndexError("%r is out of bounds of the board height: %d"%(y, self.width))
+             print "out of bounds"
 
     def get_el(self, x, y):
         self.check_bounds(x, y)
