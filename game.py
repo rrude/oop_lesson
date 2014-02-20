@@ -21,7 +21,10 @@ class Furniture(GameElement):
 class Teacher1(Furniture):
     IMAGE = "Horns"
     def interact(self, player):  
-        if sum(player.energy) > 30:
+        if len(PLAYER.inventory) >= 4:
+            GAME_BOARD.draw_msg("You did it. You've got some mad programming skills.")
+            makehackbright()
+        elif sum(player.energy) > 30:
             PLAYER.energy.append(-5)
             GAME_BOARD.draw_msg("You're late! That will cost you one joke. -5 from your energy. ENERGY LEVEL: %s" % (sum(player.energy)))
         else:
@@ -30,9 +33,17 @@ class Teacher1(Furniture):
 class Teacher2(Furniture):
     IMAGE = "Boy"
     def interact(self, player):
-        if sum(player.energy) < 60:
+        
+        if len(PLAYER.inventory) >= 4:
+            print len(PLAYER.inventory)
+            GAME_BOARD.draw_msg("You did it. You've got some mad programming skills.")
+            makehackbright()        
+
+        elif sum(player.energy) < 60:
             PLAYER.energy.append(10)
             GAME_BOARD.draw_msg("Teach sez: 'You're FINE. You aren't behind at all!' +10 energy boost! ENERGY LEVEL: %s" % (sum(player.energy)))
+        
+
         else:
             PLAYER.energy.append(-10)
             GAME_BOARD.draw_msg("Here's an ambiguous hint to confu--I mean, help you. ENERGY LEVEL: %s" % (sum(player.energy)))
@@ -57,7 +68,7 @@ class SofaLeft(Furniture):
             player.energy.append(20)
             GAME_BOARD.draw_msg("Couch nap! Energy boost! +15 ENERGY LEVEL: %s" % (sum(player.energy)))
         else:
-            GAME_BOARD.draw_msg("Don't be a couch potato. Get back to the lab! ENERGY LEVEL: %s" % (sum(player.energy)))
+            GAME_BOARD.draw_msg("Be a hacker not a slacker. Get back to the lab! ENERGY LEVEL: %s" % (sum(player.energy)))
 
 class SofaRight(Furniture):
     IMAGE = "SofaRight"
@@ -119,6 +130,14 @@ class Gem(Collectibles):
 class Rock(GameElement):
     IMAGE = "Rock"
     SOLID = True
+
+class Hacker(GameElement):
+    IMAGE = "Hackbright" 
+    SOLID = False  
+    def interact(self, player):
+        GAME_BOARD.del_el(PLAYER.x, PLAYER.y)
+        initialize()
+        GAME_BOARD.draw_msg("YOU CAN'T WIN HACKBRIGHT") 
 
 class Recur(GameElement):
     IMAGE = "Recursion"  
@@ -200,6 +219,9 @@ def initialize():
     GAME_BOARD.register(teacher2)
     GAME_BOARD.set_el(5, 7, teacher2)
 
+    hackbright = Hacker()
+    GAME_BOARD.register(hackbright)
+
     coffeemaker = Coffeemaker()
     GAME_BOARD.register(coffeemaker)
     GAME_BOARD.set_el(0, 7, coffeemaker)
@@ -246,7 +268,7 @@ def initialize():
     GAME_BOARD.set_el(0, 0, PLAYER)
     print PLAYER
 
-    GAME_BOARD.draw_msg("Welcome to Hackbright! Work hard, but watch your energy.")
+    GAME_BOARD.draw_msg("Welcome to Hackbright! Work hard, but watch your energy. Don't fear the pythons you need at least 4!")
     
 def makecoffee():
         coffee = Coffee()
@@ -262,6 +284,11 @@ def makepython():
         GAME_BOARD.register(python)
         GAME_BOARD.set_el(4, 3, python)
         GAME_BOARD.set_el(3, 4, python)
+
+def makehackbright():
+        hackbright = Hacker()
+        GAME_BOARD.register(hackbright)
+        GAME_BOARD.set_el(3, 4, hackbright)
              
 
 

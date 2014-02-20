@@ -51,7 +51,8 @@ def setup_images():
             "SofaBrown": "BrwnSofa.png",
             "SofaBrownRed": "BrwnSofaRed.png",
             "Recursion": "recur.png",
-            "CoffeeMaker": "coffeeMaker.png"
+            "CoffeeMaker": "coffeeMaker.png",
+            "Hackbright": "hackbright.png"
 
             }
 
