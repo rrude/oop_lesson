@@ -18,20 +18,46 @@ GAME_HEIGHT = 8
 class Furniture(GameElement):
     SOLID = True
 
-class Teacher(Furniture):
+class Teacher1(Furniture):
     IMAGE = "Horns"
     def interact(self, player):  
-        PLAYER.energy.append(-5)
-        GAME_BOARD.draw_msg("You're late! That will cost you one joke. -5 from your energy. ENERGY LEVEL: %s" % (sum(player.energy)))
+        if sum(player.energy) > 30:
+            PLAYER.energy.append(-5)
+            GAME_BOARD.draw_msg("You're late! That will cost you one joke. -5 from your energy. ENERGY LEVEL: %s" % (sum(player.energy)))
+        else:
+            GAME_BOARD.draw_msg("You look exhausted! Grab some zzz's. ENERGY LEVEL: %s" % (sum(player.energy)))
+
+class Teacher2(Furniture):
+    IMAGE = "Boy"
+    def interact(self, player):
+        if sum(player.energy) < 60:
+            PLAYER.energy.append(10)
+            GAME_BOARD.draw_msg("Teach sez: 'You're FINE. You aren't behind at all!' +10 energy boost! ENERGY LEVEL: %s" % (sum(player.energy)))
+        else:
+            PLAYER.energy.append(-10)
+            GAME_BOARD.draw_msg("Here's an ambiguous hint to confu--I mean, help you. ENERGY LEVEL: %s" % (sum(player.energy)))
+            makepython()
+
 
 class Desk(Furniture):
     IMAGE = "Desk"
 
+class Coffeemaker(GameElement):
+    IMAGE = "CoffeeMaker"  
+    SOLID = True
+    def interact(self, player):
+        GAME_BOARD.draw_msg("Let's HOMEbrew some coffee. Get it?! Haha, I'm so funny.")
+        makecoffee()
+
+
 class SofaLeft(Furniture):
     IMAGE = "SofaLeft"
     def interact(self, player):
-        player.energy.append(20)
-        GAME_BOARD.draw_msg("Couch nap! Energy boost! +15 ENERGY LEVEL: %s" % (sum(player.energy)))
+        if sum(player.energy) < 50:
+            player.energy.append(20)
+            GAME_BOARD.draw_msg("Couch nap! Energy boost! +15 ENERGY LEVEL: %s" % (sum(player.energy)))
+        else:
+            GAME_BOARD.draw_msg("Don't be a couch potato. Get back to the lab! ENERGY LEVEL: %s" % (sum(player.energy)))
 
 class SofaRight(Furniture):
     IMAGE = "SofaRight"
@@ -58,10 +84,13 @@ class Coffee(Collectibles):
 
 class Python(Collectibles):
     IMAGE = "Python"
+    
     def interact(self, player):
         if sum(player.energy) < 20:
+            self.SOLID = True
             GAME_BOARD.draw_msg("Not enough energy to learn PYTHON SKILLS. Find energy fast. ENERGY LEVEL: %s" % (sum(player.energy)))
         else:            
+            self.SOLID = False
             player.energy.append(-20)
             player.inventory.append(self)
             GAME_BOARD.draw_msg("PYTHON SKILLS. You have %d items! Press 'i' to view Inventory. ENERGY LEVEL: %s." % (len(player.inventory), sum((player.energy))))
@@ -75,19 +104,34 @@ class Python(Collectibles):
 
 class Gem(Collectibles):
     IMAGE = "Ruby" 
-    SOLID = False
     def interact(self, player):
         #player.inventory.append(self)
-        player.energy.append(-40)
-        GAME_BOARD.draw_msg("EVIL RUBY. CAN'T BRAIN. -40. ENERGY LEVEL: %s. Find coffee ASAP." % (sum((player.energy))))
+        if sum(player.energy) < 40:
+            self.SOLID = True
+            GAME_BOARD.del_el(PLAYER.x, PLAYER.y)
+            initialize()
+            GAME_BOARD.draw_msg("BUMMER! Not enough energy. Death by Ruby. Try again.")
+        else:
+            player.energy.append(-40)
+            GAME_BOARD.draw_msg("EVIL RUBY. CAN'T BRAIN. -40. ENERGY LEVEL: %s. Find coffee ASAP." % (sum((player.energy))))
 
 
 class Rock(GameElement):
     IMAGE = "Rock"
     SOLID = True
 
+class Recur(GameElement):
+    IMAGE = "Recursion"  
+    SOLID = True
+    def interact(self, player):
+        GAME_BOARD.del_el(PLAYER.x, PLAYER.y)
+        initialize()
+        GAME_BOARD.draw_msg("Recursion Trap! Try again.")
+
+
+
 class Character(GameElement):
-    IMAGE = "Girl"
+    IMAGE = "Hackbrighter"
 
     def next_pos(self, direction):
         if direction == "up":
@@ -104,6 +148,7 @@ class Character(GameElement):
         self.energy = [50]
         GameElement.__init__(self)
         self.inventory = []
+
 
 
 
@@ -142,10 +187,22 @@ def initialize():
     GAME_BOARD.set_el(8, 3, desk)
     GAME_BOARD.set_el(8, 5, desk)
     GAME_BOARD.set_el(8, 6, desk)
+
+    recursion = Recur()
+    GAME_BOARD.register(recursion)
+    GAME_BOARD.set_el(8, 0, recursion)
     #initialize instructor w joke request
-    teacher1 = Teacher()
+    teacher1 = Teacher1()
     GAME_BOARD.register(teacher1)
     GAME_BOARD.set_el(0, 3, teacher1)
+    #initalize teacher w wisdom
+    teacher2 = Teacher2()
+    GAME_BOARD.register(teacher2)
+    GAME_BOARD.set_el(5, 7, teacher2)
+
+    coffeemaker = Coffeemaker()
+    GAME_BOARD.register(coffeemaker)
+    GAME_BOARD.set_el(0, 7, coffeemaker)
     #initialize coffee
     coffee_positions = [
             (2, 7),
@@ -189,8 +246,23 @@ def initialize():
     GAME_BOARD.set_el(0, 0, PLAYER)
     print PLAYER
 
-    GAME_BOARD.draw_msg("Welcome to Hackbright!")
+    GAME_BOARD.draw_msg("Welcome to Hackbright! Work hard, but watch your energy.")
     
+def makecoffee():
+        coffee = Coffee()
+        GAME_BOARD.register(coffee)
+        GAME_BOARD.set_el(5, 4, coffee)
+        GAME_BOARD.set_el(2, 7, coffee)
+        GAME_BOARD.set_el(6, 7, coffee)
+        GAME_BOARD.set_el(6, 0, coffee)
+        print coffee
+
+def makepython():
+        python = Python()
+        GAME_BOARD.register(python)
+        GAME_BOARD.set_el(4, 3, python)
+        GAME_BOARD.set_el(3, 4, python)
+             
 
 
 def keyboard_handler():
@@ -248,7 +320,6 @@ def keyboard_handler():
                 GAME_BOARD.del_el(PLAYER.x, PLAYER.y) 
                 GAME_BOARD.set_el(next_x, next_y, PLAYER)
 
-     
 
 
 

@@ -5,7 +5,7 @@ from pyglet.window import key
 from core import GameElement
 #this would be screen resolution
 SCREEN_X = 1200
-SCREEN_Y = 780
+SCREEN_Y = 790
 
 game_window = pyglet.window.Window(SCREEN_X, SCREEN_Y)
 
@@ -41,6 +41,7 @@ def setup_images():
             "Cat": "Character Cat Girl.png",
             "Horns": "Character Horn Girl.png",
             "Girl": "Character Pink Girl.png",
+            "Hackbrighter": "Character-Red-Girl.png",
             "Princess": "Character Princess Girl.png",
             "Coffee": "coffee.png",
             "SofaRight": "SofaRight.png",
@@ -48,7 +49,9 @@ def setup_images():
             "Python": "python.png",
             "Desk": "desk.png",
             "SofaBrown": "BrwnSofa.png",
-            "SofaBrownRed": "BrwnSofaRed.png"
+            "SofaBrownRed": "BrwnSofaRed.png",
+            "Recursion": "recur.png",
+            "CoffeeMaker": "coffeeMaker.png"
 
             }
 
@@ -250,6 +253,7 @@ class UpdateWrapper(object):
         self.fn = fn
     def update(self, dt):
         self.fn()
+
 
 if __name__ == "__main__":
     run()
